@@ -1,0 +1,45 @@
+//fpc 3.0.0
+
+program HelloWorld;
+
+var satz: String;
+var position: Byte;
+var langerString: String[200];
+var laufChar: Char;
+begin
+    langerString:= '';
+    laufChar := 'A';
+    satz:= 'Jacob Weinhold';
+    writeln(satz);
+    satz:=concat(satz,'ist der coolste');
+    writeln(satz);
+
+
+    insert(' ', satz, 15);
+    writeln(satz);
+    
+    writeln(length(satz));
+    position:= pos(' ', satz);
+    writeln(position);
+    
+    writeln(copy(satz, 1, pos(' ', satz)));
+    
+    delete(satz, pos(' ', satz), length(satz) - pos(' ', satz));
+    
+    repeat
+    
+    langerString := concat(langerString, laufChar);
+    
+    If laufChar <> 'Z' then
+    begin
+        laufChar:= succ(laufChar);
+    end
+    else
+        laufChar := 'A';
+        
+    
+    until(length(langerString) >= 200 );
+    
+    writeln(langerString);
+    
+end.
