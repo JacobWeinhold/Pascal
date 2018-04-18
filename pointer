@@ -1,0 +1,92 @@
+//fpc 3.0.0
+
+program HelloWorld;
+
+type TCharP = ^ Char;
+
+    PIntListe = ^ TIntListe;    
+    TIntListe = record
+      int : integer;
+      next : PIntListe;
+    end;
+   
+    
+
+
+var firstCharP, secondCharP: TCharP;
+varChar: Char;
+
+head, temp : PIntListe;
+
+
+function anhaengen(n: integer; entry: PIntListe): PIntListe;
+var temp : PIntListe;
+begin
+    new(temp);
+    temp^.int := n;
+    temp^.next := entry;
+    anhaengen := temp;
+end;
+
+procedure traversePrint(entry: PIntListe);
+var temp : PIntListe;
+begin
+
+    if entry = nil then
+    begin
+    writeln('List is empty');
+    end
+    
+    else
+    begin
+        temp := entry;
+        writeln(entry^.int);
+        while temp<> nil do
+        begin
+        writeln(temp^.int);
+        temp  := temp^.next;
+        end;
+    end;
+
+end;
+
+procedure deleteList(entry: PIntListe);
+var temp: PIntListe;
+begin 
+    while entry <> nil do
+    begin 
+        temp := entry;
+        entry := entry^.next;
+        dispose(temp);
+    end
+
+end;
+
+begin
+
+varChar := 'A';
+
+firstCharP := @varChar;
+secondCharP := @varChar;
+
+writeln(firstCharP);
+varChar := 'B';
+writeln(firstCharP);
+
+firstCharP^ := 'C';
+writeln(firstCharP);
+
+secondCharP^ := 'D';
+writeln(secondCharP);
+
+writeln('nicht abgestürzt');
+
+head := nil;
+head := anhaengen(1,head);
+head := anhaengen(2,head);
+head := anhaengen(3,head);
+traversePrint(head);
+deleteList(head);
+writeln(head^.int); // hier kommt blödsinn raus, also aufpassen mit unpredictable behavior
+
+end.
