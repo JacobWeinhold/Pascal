@@ -1,0 +1,223 @@
+program Project1;
+
+
+{$APPTYPE CONSOLE}
+{$R+,Q+,X-}
+
+
+uses
+  System.SysUtils, System.Math;
+
+  type quantitiyOfEachBun = 0..10;
+       TBunQuantities = array [1..3] of quantitiyOfEachBun;
+
+  const
+  _bagSize: Byte = 3;
+  _bunTypeOne: String = 'Mohnbrötchen';
+  _bunTypeTwo: String = 'Sesambrötchen';
+  _bunTypeThree: String = 'Laugenbrötchen';
+  _bunTypes: array[1..3] of String = ('Mohnbrötchen', 'Sesambrötchen', 'Laugenbrötchen');
+  _poppyBunIndex: Byte = 1;
+  _sesamBunIndex: Byte = 2;
+  _lyeRollIndex: Byte = 3;
+
+  (*
+    Parses the quantity of each bun type the customer wants to buy from stdout and stores each value in the designated index.
+    Returns the array.
+  *)
+  function getShoppingCartFromUser(): TBunQuantities;
+  var bunQuantities: TBunQuantities;
+      zahl: Byte;
+  begin
+    write('Wie viele ' + _bunTypeOne + ' möchtest du? ');
+    readln(zahl);
+    bunQuantities[_poppyBunIndex] := zahl;
+
+    write('Wie viele ' + _bunTypeTwo + ' möchtest du? ');
+    readln(zahl);
+    bunQuantities[_sesamBunIndex] := zahl;
+
+    write('Wie viele ' + _bunTypeThree + ' möchtest du? ');
+    readln(zahl);
+    bunQuantities[_lyeRollIndex] := zahl;
+    writeln;
+
+    getShoppingCartFromUser := bunQuantities;
+
+  end;
+   (*
+   Calculates the number of shopping bags needed to pack a given quantity of buns
+   Number of shopping bags can be one more than needed.
+
+   @param bunQuantites array holding the quantity of each bun type
+   @return number of shopping bags needed
+   *)
+   function calculateNumberOfBagsNeeded(bunQuantites: TBunQuantities): Byte;
+
+   var  totalBunQuantity : Byte;
+
+   begin
+    totalBunQuantity := bunQuantites[_poppyBunIndex] + bunQuantites[_sesamBunIndex] + bunQuantites[_lyeRollIndex];
+    calculateNumberOfBagsNeeded := totalBunQuantity div _bagSize + 1;
+   end;
+   (*
+     Calculates and returns the quantity of buns in the last shopping back
+   *)
+   function calculateBunQuantityInLastBag(totalBunQuantity: Byte): Byte;
+   var bunQuantityInLastBag: Byte;
+   begin
+    bunQuantityInLastBag :=  totalBunQuantity mod _bagSize;
+    calculateBunQuantityInLastBag := bunQuantityInLastBag;
+   end;
+   (*
+
+   *)
+   function analyzeMinOfBunsOrderedPerType(bunQuantities: TBunQuantities): Byte;
+   var minimal: Byte;
+   begin
+
+      minimal := min(bunQuantities[1], bunQuantities[2]);
+      minimal := min(minimal, bunQuantities[3]);
+      analyzeMinOfBunsOrderedPerType := minimal;
+
+   end;
+
+   (*
+     returns the maximum quantity of orders for a single bun type stored in the param array bunQuantities
+   *)
+   function analyzeMaxOfBunsOrderedPerType(bunQuantities: TBunQuantities): Byte;
+   var maximal: Byte;
+   begin
+      maximal := max(bunQuantities[1], max(bunQuantities[2], bunQuantities[3]));
+      analyzeMaxOfBunsOrderedPerType := maximal;
+
+   end;
+
+   (*
+    returns true if the bun type with the given index as param bunTypeIndex has the highest quantity in the param array bunQuantities
+   *)
+   function analyzeBunTypeWasMostOrderedBun(bunTypeIndex: Byte; bunQuantities: TBunQuantities): Boolean;
+   var
+   wasMostOrdered: Boolean;
+   numberOfThisBunType : Byte;
+   begin
+    numberOfThisBunType := bunQuantities[bunTypeIndex];
+    wasMostOrdered := numberOfThisBunType = analyzeMaxOfBunsOrderedPerType(bunQuantities);
+    analyzeBunTypeWasMostOrderedBun := wasMostOrdered;
+
+   end;
+
+   (*
+    returns true if the bun type with the given index as param bunTypeIndex has the lowest quantity in the param array bunQuantities
+   *)
+   function analyzeBunTypeWasLeastOrderedBun(bunTypeIndex: Byte; bunQuantities: TBunQuantities): Boolean;
+   var
+   wasMostOrdered: Boolean;
+   numberOfThisBunType : Byte;
+   begin
+    numberOfThisBunType := bunQuantities[bunTypeIndex];
+    wasMostOrdered := numberOfThisBunType = analyzeMinOfBunsOrderedPerType(bunQuantities);
+    analyzeBunTypeWasLeastOrderedBun := wasMostOrdered;
+
+   end;
+
+   (*
+    returns true if each type of bun was ordered by the customer
+   *)
+   function eachBunTypeWasOrdered(bunQuantities: TBunQuantities): Boolean;
+
+   begin
+        eachBunTypeWasOrdered := not((bunQuantities[1] = 0) or (bunQuantities[2] = 0)  or (bunQuantities[3] = 0));
+   end;
+
+
+   (*
+    returns true if one bun type was bought more than any other bun type
+   *)
+   function customerHasADistinctFavoriteBunType(bunQuantities: TBunQuantities): Boolean;
+   var hasFavorite: Boolean;
+   begin
+         hasFavorite := (max(bunQuantities[1], bunQuantities[2]) < max(bunQuantities[2], bunQuantities[3]))
+         or (max(bunQuantities[2], bunQuantities[3]) <  max(bunQuantities[1], bunQuantities[2]))
+         ;
+
+         customerHasADistinctFavoriteBunType := hasFavorite;
+
+   end;
+
+   (*
+     This progam's main method which takes a sequence of user inputs from stdout and analyzes them as a customer interactions,
+     prints an analyzation of the customer's choices to stdout
+   *)
+   procedure handleAndAnalyzeBunTransaction();
+   var bunQuantities: TBunQuantities;
+        totalBagsNeeded, totalBunQuantity : Byte;
+
+
+   begin
+          bunQuantities := getShoppingCartFromUser;
+          totalBagsNeeded := calculateNumberOfBagsNeeded(bunQuantities);
+          write('Es werden insgesamt ');
+          write(totalBagsNeeded);
+          write(' Tüten der Größe ');
+          write(_bagSize);
+          writeln(' benötigt.');
+          writeln;
+
+
+          totalBunQuantity := bunQuantities[1] +   bunQuantities[2] +  bunQuantities[3];
+          write('In der letzten Tüte befinden sich ');
+          write(calculateBunQuantityInLastBag(totalBunQuantity));
+          writeln(' Brötchen');
+          writeln;
+
+          write('Insgesamt wurden ');
+          write(totalBunQuantity);
+          writeln(' Brötchen gekauft.');
+          writeln;
+
+          write('Die maximale Anzahl ist ');
+          write(analyzeMaxOfBunsOrderedPerType(bunQuantities));
+          write(' , die minimale ist ');
+          writeln(analyzeMinOfBunsOrderedPerType(bunQuantities));
+          writeln;
+
+
+          write('Sorte 1 wurde am meisten gekauft: ');
+          writeln(analyzeBunTypeWasMostOrderedBun(1, bunQuantities));
+          writeln;
+
+          write('Sorte 2 wurde am meisten gekauft: ');
+          writeln(analyzeBunTypeWasMostOrderedBun(2, bunQuantities));
+          writeln;
+
+          write('Sorte 3 wurde am meisten gekauft: ');
+          writeln(analyzeBunTypeWasMostOrderedBun(3, bunQuantities));
+          writeln;
+
+          write('Sorte 1 wurde am wenigsten gekauft: ');
+          writeln(analyzeBunTypeWasLeastOrderedBun(1, bunQuantities));
+          writeln;
+
+          write('Sorte 2 wurde am wenigsten gekauft: ');
+          writeln(analyzeBunTypeWasLeastOrderedBun(2, bunQuantities));
+          writeln;
+
+          write('Sorte 3 wurde am wenigsten gekauft: ');
+          writeln(analyzeBunTypeWasLeastOrderedBun(3, bunQuantities));
+          writeln;
+
+          write('Jede Sorte wurde gekauft: ');
+          writeln(eachBunTypeWasOrdered(bunQuantities));
+          writeln;
+
+          write('Es gibt eine eindeutige Lieblingssorte: ');
+          writeln(customerHasADistinctFavoriteBunType(bunQuantities));
+   end;
+
+
+begin
+
+  handleAndAnalyzeBunTransaction();
+  readln;
+end.
