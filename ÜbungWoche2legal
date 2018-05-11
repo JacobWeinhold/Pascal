@@ -1,0 +1,77 @@
+//fpc 3.0.0
+
+program Brötchenanalyse;
+
+uses System.Math;
+
+const bagSize = 5;
+var mohn, sesam, laugen, numberOfBunsTotal: Byte;
+
+    bagQuantity, bunsInLastBag: Byte;
+
+    minBuns, maxBuns: Byte;
+
+    sesamIsMax, laugenIsMax, mohnIsMax: Boolean;
+
+    sesamIsMin, laugenIsMin, mohnIsMin: Boolean;
+
+    eachBunWasOrdered, distinctFavoriteBunTypePresent: Boolean;
+
+begin
+    write('Wie viele Mohnbrötchen möchtest Du?');
+    readln(mohn);
+
+    write('Wie viele Sesambrötchen möchtest Du?');
+    readln(sesam);
+
+    write('Wie viele Laugenbrötchen möchtest Du?');
+    readln(laugen);
+
+    numberOfBunsTotal:= mohn + sesam + laugen;
+
+    bagQuantity := (numberOfBunsTotal div bagSize )+ 1;
+
+    writeln('Es werden insgesamt ', bagQuantity, ' Brötchentüten der Größe', bagSize,  ' benötigt.');
+
+    bunsInLastBag := numberOfBunsTotal mod bagSize;
+    writeln('In der letzten Tüte befinden sich ', bunsInLastBag, ' Brötchen');
+
+
+    writeln('Insgesamt wurden ', numberOfBunsTotal, ' Brötchen gekauft.');
+
+    minBuns := min(sesam, min(mohn, laugen));
+    maxBuns := max(sesam, max(mohn, laugen));
+
+    writeln('Die maximale Anzahl ist ', maxBuns,', die minimale ist ',minBuns);
+
+    mohnIsMax := mohn = maxBuns;
+    mohnIsMin := mohn = minBuns;
+    writeln('Sorte 1 wurde am meisten gekauft: ', mohnIsMax);
+    writeln('Sorte 1 wurde am wenigsten  gekauft: ', mohnIsMin);
+
+
+    sesamIsMax := sesam = maxBuns;
+    sesamIsMin := sesam = minBuns;
+    writeln('Sorte 2 wurde am meisten gekauft: ', sesamIsMax);
+    writeln('Sorte 2 wurde am wenigsten  gekauft: ', sesamIsMin);
+
+
+
+    laugenIsMax := laugen = maxBuns;
+    laugenIsMin := laugen = minBuns;
+    writeln('Sorte 3 wurde am meisten gekauft: ', laugenIsMax);
+    writeln('Sorte 3 wurde am wenigsten  gekauft: ', laugenIsMin);
+
+    eachBunWasOrdered := minBuns > 0;
+
+    writeln('Jede Sorte wurde gekauft ', eachBunWasOrdered);
+
+
+    distinctFavoriteBunTypePresent :=  ( byte(sesamIsMax) +  byte(mohnIsMax) + byte(laugenIsMax) ) = 1;
+    // alternative way as shown in "Hilfe"
+    distinctFavoriteBunTypePresent := ( ((numberOfBunsTotal - minBuns) - maxBuns) < maxBuns);
+    writeln('Es gibt eine eindeutige Lieblingssorte: ', distinctFavoriteBunTypePresent);
+
+    readln;
+
+end.
