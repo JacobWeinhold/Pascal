@@ -1,0 +1,172 @@
+program Geokoordinaten;
+
+{$APPTYPE CONSOLE}
+{$R+,Q+,X-}
+
+uses
+  System.SysUtils;
+
+var
+latitudeDirection, longitudeDirection: Char;
+latitudeDegree, longitudeDegree: Byte;
+latitudeMinutes, longitudeMinutes: Byte;
+latitudeDecimalMinutes, longitudeDecimalMinutes: Smallint;
+
+isValidIf, isValidCase, isValidAlloc: Boolean;
+
+
+
+begin
+  writeln('Himmelsrichtung des Breitengrads: ');
+  readln(latitudeDirection);
+
+  write('Breitengrad: ');
+  readln(latitudeDegree);
+
+  write('Breitengradsminuten: ');
+  readln(latitudeMinutes);
+
+  write('Breitengradsdezimalminuten: ');
+  readln(latitudeDecimalMinutes);
+
+  write('Himmelsrichtung des Längengrades: ');
+  readln(longitudeDirection);
+
+  write('Längengrad: ');
+  readln(longitudeDegree);
+
+  write('Längengradsminuten: ');
+  readln(longitudeMinutes);
+
+  write('Längengradsdezimalminuten: ');
+  readln(longitudeDecimalMinutes);
+
+  writeln('Die eingegebene unvalidierte Koordinate lautet:');
+  writeln(latitudeDirection, latitudeDegree, '° ', latitudeMinutes, '.', latitudeDecimalMinutes,
+            ' ', longitudeDirection, longitudeDegree, '° ', longitudeMinutes, '.', longitudeDecimalMinutes);
+
+  isValidIf := true;
+  if(not((latitudeDirection = 'N') or (latitudeDirection = 'S'))
+    or((latitudeDegree < 0)  or (latitudeDegree > 90))
+    or ((latitudeMinutes < 0) or (latitudeMinutes > 60))
+    or((latitudeDecimalMinutes < 0) or ((latitudeDecimalMinutes > 999)))
+    or (not((longitudeDirection = 'E') or (longitudeDirection = 'W')))
+    or ((longitudeDegree < 0 ) or (longitudeDegree > 180))
+    or ((longitudeMinutes < 0) or (longitudeMinutes > 60))
+    or((longitudeDecimalMinutes < 0) or(longitudeDecimalMinutes > 999)))   then
+    isValidIf := false
+
+  else if (((latitudeDegree = 90) and ((latitudeMinutes <> 0) or (latitudeDecimalMinutes <> 0 )))
+      or ((longitudeDegree =  180) and ((longitudeMinutes <> 0) or (longitudeDecimalMinutes <> 0)))
+      or((latitudeMinutes = 60) and (latitudeDecimalMinutes <> 0))
+      or((longitudeMinutes = 60) and (longitudeDecimalMinutes <> 0))
+      ) then
+      isValidIf := false
+
+  else
+      isValidIf := true;
+
+    case latitudeDirection of
+      'N', 'S' :
+        case latitudeDegree of
+          0..90 : case latitudeMinutes of
+                        0..60: case latitudeDecimalMinutes of
+                                      0..999: case latitudeDegree of
+                                                90: case latitudeMinutes of
+                                                        0:
+                                                        case latitudeDecimalMinutes of
+                                                            0: isValidCase:= true;
+                                                            else
+                                                              isValidCase:= false;
+                                                        end;
+                                                    else
+                                                      isValidCase := false;
+                                                    end;
+                                                else
+                                                  case latitudeMinutes of
+                                                         60: case latitudeDecimalMinutes of
+                                                                0: isValidCase:= true;
+                                                                else
+                                                                  isValidCase:= false;
+                                                             end;
+                                                         else
+                                                  isValidCase := true;
+                                                  end;
+                                          end;
+                                      end;
+                        end;
+                  end;
+              end;
+
+    case longitudeDirection of
+      'W', 'E' :
+        case longitudeDegree of
+          0..180 : case longitudeMinutes of
+                        0..60: case longitudeDecimalMinutes of
+                                      0..999: case longitudeDegree of
+                                                180: case longitudeMinutes of
+                                                        0:
+                                                        case longitudeDecimalMinutes of
+                                                            0:
+                                                            else
+                                                              isValidCase:= false;
+                                                        end;
+                                                    else
+                                                      isValidCase := false;
+                                                    end;
+                                                else
+                                                  case longitudeMinutes of
+                                                         60: case longitudeDecimalMinutes of
+                                                                0:
+                                                                else
+                                                                  isValidCase:= false;
+                                                             end;
+
+                                                  end;
+                                          end;
+                                   end;
+                        end;
+                  end;
+              end;
+
+      isValidAlloc := (((latitudeDirection = 'N') or (latitudeDirection = 'S'))
+                  and (latitudeDegree >= 0)
+                  and (latitudeDegree <= 90)
+                  and (latitudeMinutes >= 0)
+                  and(latitudeMinutes <= 60)
+                  and(latitudeDecimalMinutes >= 0)
+                  and(latitudeDecimalMinutes <= 999)
+
+                  and ((longitudeDirection = 'E') or (longitudeDirection = 'W'))
+                  and (longitudeDegree >= 0)
+                  and (longitudeDegree <= 180)
+                  and (longitudeMinutes >= 0)
+                  and(longitudeMinutes <= 60)
+                  and(longitudeDecimalMinutes >= 0)
+                  and(longitudeDecimalMinutes <= 999)
+
+                  and(((latitudeDegree = 90) and (latitudeMinutes = 0) and (latitudeDecimalMinutes = 0))
+                    or (latitudeDegree <> 90))
+
+                  and(((latitudeMinutes = 60) and (latitudeDecimalMinutes = 0))
+                    or (latitudeMinutes <> 60))
+
+                  and(((longitudeDegree = 180) and (longitudeMinutes = 0) and (longitudeDecimalMinutes = 0))
+                    or (longitudeDegree <> 180))
+
+                  and(((longitudeMinutes = 60) and (longitudeDecimalMinutes = 0))
+                    or (longitudeMinutes <> 60))
+
+                  and(not(longitudeMinutes = 60)) or (longitudeDecimalMinutes = 0)
+
+                  );
+
+    writeln('IsValidIf ?', isValidIf);
+         writeln('isValidCase? ', isValidCase);
+    writeln('isValidAlloc? ', isValidAlloc);
+
+
+              readln;
+
+
+end.
