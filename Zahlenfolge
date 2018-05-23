@@ -1,0 +1,133 @@
+program NumberSequence;
+
+(*
+  This program inspects a sequence of natural numbers for the following properties:
+  even/uneven, fibonacci number, one digit digit-sum, next lesser prime number, next bigger prime number
+*)
+{$APPTYPE CONSOLE}
+{$R+,Q+,X-}
+
+uses
+  System.SysUtils;
+
+const
+  LOWER_BORDER = 1;
+  UPPER_BORDER = 50;
+
+var
+  i, fib1, fib2, newFib,
+
+    digitSum, digitSumTemp, numberOfDigits,
+
+    outerPrime, innerPrime, lesserPrimeNumber, biggerPrimeNumber: Integer;
+
+  isEvenNumber, isFib, foundLesserPrime, foundBiggerPrime: Boolean;
+
+begin
+  for i := LOWER_BORDER to UPPER_BORDER do
+  begin
+    isEvenNumber := i mod 2 = 0;
+    write(i:3, ' gerade: ');
+    write(isEvenNumber:5);
+    write(' Fib: ');
+
+    (* shortcut to check isFibonacciNumber
+      fiboNac1, fiboNac2, fiboCounter : Integer;
+      fiboNac1 := 5*i*i +4;
+      fiboNac2 := 5*i*i - 4;
+      write(((trunc(sqrt(fiboNac1)) *  trunc(sqrt(fiboNac1))) = fiboNac1)
+      or (((trunc(sqrt(fiboNac2))) *  trunc(sqrt(fiboNac2))) = fiboNac2));
+    *)
+
+    (*
+      check if the current value of i is a fibonacci numer by generating fibonacci numbers until i is reached
+    *)
+    isFib := false;
+    fib1 := 0;
+    fib2 := 1;
+    while (fib2 <= i) do
+    begin
+        newFib := fib1 + fib2;
+        fib1 := fib2;
+        fib2 := newFib;
+        isFib := (i = fib1) or (i = fib2);
+    end;
+    write(isFib:6);
+
+    (*
+      calculate the digit sum of the current value of i by storing i in a temp variable and deleting the last digit with div 10 each iteration
+    *)
+    digitSum := 0;
+    digitSumTemp := i;
+
+    while ((digitSumTemp > 0) or (digitSum > 9)) do
+    begin
+      if( digitSumTemp = 0) then
+      begin
+        digitSumTemp := digitSum;
+        digitSum := 0;
+      end;
+
+      digitSum := digitSum + (digitSumTemp mod 10);
+      digitSumTemp := digitSumTemp div 10;
+    end;
+    write(' Quersumme: ', digitSum:3);
+
+
+
+    (*
+      look for a prime number less than i by looping from i-1 to 1 and checking if the current iteration is a prime
+    *)
+    outerPrime := i - 1;
+    repeat
+      foundLesserPrime := true;
+      for innerPrime := 2 to (outerPrime - 1) do
+      begin
+        if (outerPrime mod innerPrime = 0) then
+          foundLesserPrime := false;
+      end;
+      if (foundLesserPrime) then
+      begin
+        lesserPrimeNumber := outerPrime;
+        outerPrime := 1;
+      end
+      else
+        outerPrime := outerPrime - 1;
+    until outerPrime <= 1;
+
+    write(' <Prim: ');
+    if (0 <> lesserPrimeNumber) then
+      write(lesserPrimeNumber:3)
+    else
+      write('-':3);
+
+    (*
+      look for a prime number bigger than i by looping from i+1 until one is found
+    *)
+    outerPrime := 1 + i;
+    repeat
+      innerPrime := 2;
+      foundBiggerPrime := true;
+      repeat
+        if ((outerPrime mod innerPrime) = 0) then
+        begin
+          foundBiggerPrime := false;
+          innerPrime := outerPrime;
+        end
+        else
+          innerPrime := innerPrime + 1;
+      until innerPrime = outerPrime;
+
+      if (foundBiggerPrime) then
+      begin
+        biggerPrimeNumber := outerPrime;
+      end;
+
+      outerPrime := outerPrime + 1;
+    until foundBiggerPrime or (outerPrime = i * 2);
+
+    writeln(' >Prim: ', biggerPrimeNumber:3);
+  end;
+  readln;
+
+end.
